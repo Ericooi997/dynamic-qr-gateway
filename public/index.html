@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure QR Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+  <h2>Dynamic Encrypted QR Code</h2>
+  <canvas id="qr"></canvas>
+  <script>
+    function generateDynamicQRCode() {
+      const code = "1390103";
+      const timestamp = Math.floor(Date.now() / 1000);
+      const secret = "yourSecretKey";
+      const textToHash = code + timestamp + secret;
+
+      async function sha256(text) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+      }
+
+      sha256(textToHash).then((signature) => {
+        const raw = `code=${code}&t=${timestamp}&sign=${signature}`;
+        const base64 = btoa(raw);
+        const qrUrl = `https://yourdomain.vercel.app/entry?token=${base64}`;
+        QRCode.toCanvas(document.getElementById("qr"), qrUrl, function (error) {
+          if (error) console.error(error);
+        });
+      });
+    }
+
+    generateDynamicQRCode();
+  </script>
+</body>
+</html>
