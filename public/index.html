@@ -25,7 +25,7 @@
       sha256(textToHash).then((signature) => {
         const raw = `code=${code}&t=${timestamp}&sign=${signature}`;
         const base64 = btoa(raw);
-        const qrUrl = `https://dynamic-qr-gateway-8wza.vercel.app/entry?token=${base64}`;
+        const qrUrl = `https://dynamic-qr-gateway-8wza.vercel.app/api/entry?token=${base64}`;
         QRCode.toCanvas(document.getElementById("qr"), qrUrl, function (error) {
           if (error) console.error(error);
         });
