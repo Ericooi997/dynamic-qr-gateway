@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Secure QR Generator</title>
+  <meta charset="UTF-8" />
+  <title>Secure QR Generator - Offline</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 <body>
-  <h2>Dynamic Encrypted QR Code</h2>
+  <h2>Offline Dynamic QR Code</h2>
   <canvas id="qr"></canvas>
+
   <script>
     function generateDynamicQRCode() {
       const code = "1390103";
       const timestamp = Math.floor(Date.now() / 1000);
-      const secret = "yourSecretKey";
+      const secret = "yourSecretKey"; // 请保持与设备端同步
       const textToHash = code + timestamp + secret;
 
       async function sha256(text) {
@@ -23,11 +24,10 @@
       }
 
       sha256(textToHash).then((signature) => {
-        const raw = `code=${code}&t=${timestamp}&sign=${signature}`;
-        const base64 = btoa(raw);
-        const qrUrl = `https://dynamic-qr-gateway-8wza.vercel.app/api/entry?token=${base64}`;
-        QRCode.toCanvas(document.getElementById("qr"), qrUrl, function (error) {
+        const finalText = `code=${code}&t=${timestamp}&sign=${signature}`;
+        QRCode.toCanvas(document.getElementById("qr"), finalText, function (error) {
           if (error) console.error(error);
+          console.log("Generated QR:", finalText);
         });
       });
     }
